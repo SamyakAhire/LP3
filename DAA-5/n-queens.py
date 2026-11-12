@@ -53,9 +53,9 @@ n = int(input("Enter N: "))
 board = [[0] * n for _ in range(n)]
 
 # Place first queen
-board[0][0] = 1
+# board[0][0] = 1
 
-if solve(board, 1, n):
+if solve(board, 0, n):
     print("\nFinal N-Queens Matrix:")
     print_board(board, n)
 else:
