@@ -1,75 +1,33 @@
-class Node:
-    def __init__(self,left=None,right=None,value=None,frequency=None):
-        self.left = left
-        self.right = right
-        self.value = value
-        self.frequency = frequency
-    
-    def children(self):
-        return (self.left,self.right)
+import heapq
 
+def huffman(characters, frequencies):
 
+    heap = [[frequencies[i], characters[i]] 
+            for i in range(len(characters))]
 
-class Huffman_Encoding:
-    def __init__(self,string):
-        self.q = []
-        self.string = string
-        self.encoding = {}
+    heapq.heapify(heap)
 
-    def char_frequency(self):
-        count = {}
-        for char in self.string:
-            if char not in count:
-                count[char] = 0
-            count[char] += 1
+    while len(heap) > 1:
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
 
-        for char,value in count.items():
-            node = Node(value=char,frequency=value)
-            self.q.append(node)
-        self.q.sort(key=lambda x: x.frequency)    
+        new_node = [left[0] + right[0], left, right]
+        heapq.heappush(heap, new_node)
 
-    def build_tree(self):
-        while len(self.q) > 1:
-            n1 = self.q.pop(0)
-            n2 = self.q.pop(0)
-            node = Node(left=n1,right=n2,frequency=n1.frequency + n2.frequency)
-            self.q.append(node)
-            self.q.sort(key = lambda x:x.frequency)
+    def print_codes(node, code=""):
 
-    
-    def helper(self,node:Node,binary_str="",):
-        if type(node.value) is str:
-            self.encoding[node.value] = binary_str
+        if len(node) == 2:
+            print(node[1], ":", code if code else "0")
             return
-        l,r = node.children()
-        self.helper(node.left,binary_str + "0")
-        self.helper(node.right,binary_str + "1")
-        print(node.frequency)
-        return
-        
 
-    def huffman_encoding(self):
-        root = self.q[0]
-        self.helper(root,"")
+        print_codes(node[1], code + "0")
+        print_codes(node[2], code + "1")
+
+    print("\nHuffman Codes:")
+    print_codes(heap[0])
 
 
-    def print_encoding(self):
-        print(' Char | Huffman code ')
-        for char,binary in self.encoding.items():
-            print(" %-4r |%12s" % (char,binary))
-    
-    def encode(self):
-        self.char_frequency()
-        self.build_tree()
-        self.huffman_encoding()
-        self.print_encoding()
+characters = input("Enter characters separated by space: ").split()
+frequencies = list(map(int, input("Enter frequencies: ").split()))
 
-string = input("Enter string to be encoded: ")
-# string = 'AAAAAAABBCCCCCCDDDEEEEEEEEE'
-encode = Huffman_Encoding(string)
-encode.encode()
-
-
-# The time complexity for encoding each unique character based on its frequency is O(nlog n).
-
-# Extracting minimum frequency from the priority queue takes place 2*(n-1) times and its complexity is O(log n). Thus the overall complexity is O(nlog n).
+huffman(characters, frequencies)
